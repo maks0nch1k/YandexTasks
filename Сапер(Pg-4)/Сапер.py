@@ -1,5 +1,3 @@
-import pprint
-
 import pygame
 import random
 
@@ -18,6 +16,7 @@ class Board:
         self.top = 25
         self.cell_size = 50
         self.step = 0
+        self.arr = [[] for i in range(8)]
 
     def set_view(self, left, top, cell_size):
         self.left = left
@@ -42,12 +41,12 @@ class Board:
 
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
+        self.arr = [[] for i in range(8)]
         self.on_click(cell)
 
     def on_click(self, cell):
         if cell is not None and self.board[cell[1]][cell[0]] != 10:
             self.board[cell[1]][cell[0]] = 0
-            # pprint.pprint(self.board)
             self.open_cell(cell)
 
     def open_cell(self, cell):
@@ -67,6 +66,31 @@ class Board:
             self.board[cell[1]][cell[0]] += 1
         if cell[0] < self.cols - 1 and self.board[cell[1]][cell[0] + 1] == 10:
             self.board[cell[1]][cell[0]] += 1
+
+        if cell[1] < self.rows - 1 and self.board[cell[1]][cell[0]] == 0 and (cell[0], cell[1]) not in self.arr[0]:
+            self.arr[0].append((cell[0], cell[1]))
+            self.on_click((cell[0], cell[1] + 1))
+        if cell[1] > 0 and self.board[cell[1]][cell[0]] == 0 and (cell[0], cell[1]) not in self.arr[1]:
+            self.arr[1].append((cell[0], cell[1]))
+            self.on_click((cell[0], cell[1] - 1))
+        if cell[0] < self.cols - 1 and cell[1] < self.rows - 1 and self.board[cell[1]][cell[0]] == 0 and (cell[0], cell[1]) not in self.arr[2]:
+            self.arr[2].append((cell[0], cell[1]))
+            self.on_click((cell[0] + 1, cell[1] + 1))
+        if cell[0] > 0 and cell[1] < self.rows - 1 and self.board[cell[1]][cell[0]] == 0 and (cell[0], cell[1]) not in self.arr[3]:
+            self.arr[3].append((cell[0], cell[1]))
+            self.on_click((cell[0] - 1, cell[1] + 1))
+        if cell[0] < self.cols - 1 and cell[1] > 0 and self.board[cell[1]][cell[0]] == 0 and (cell[0], cell[1]) not in self.arr[4]:
+            self.arr[4].append((cell[0], cell[1]))
+            self.on_click((cell[0] + 1, cell[1] - 1))
+        if cell[0] > 0 and cell[1] > 0 and self.board[cell[1]][cell[0]] == 0 and (cell[0], cell[1]) not in self.arr[5]:
+            self.arr[5].append((cell[0], cell[1]))
+            self.on_click((cell[0] - 1, cell[1] - 1))
+        if cell[0] > 0 and self.board[cell[1]][cell[0]] == 0 and (cell[0], cell[1]) not in self.arr[6]:
+            self.arr[6].append((cell[0], cell[1]))
+            self.on_click((cell[0] - 1, cell[1]))
+        if cell[0] < self.cols - 1 and self.board[cell[1]][cell[0]] == 0 and (cell[0], cell[1]) not in self.arr[7]:
+            self.arr[7].append((cell[0], cell[1]))
+            self.on_click((cell[0] + 1, cell[1]))
 
     def get_cell(self, mouse_pos):
         pos = mouse_pos
