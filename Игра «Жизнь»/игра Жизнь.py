@@ -57,24 +57,63 @@ class Life(Board):
     def next_move(self):
         board = deepcopy(self.board)
 
-        for i in range(self.cols):
-            for j in range(self.rows):
+        for j in range(self.cols):
+            for i in range(self.rows):
                 cnt = 0
                 if j < self.rows - 1 and self.board[j + 1][i] == 1:
                     cnt += 1
+                elif j == self.rows - 1 and self.board[0][i] == 1:
+                    cnt += 1
+
                 if j > 0 and self.board[j - 1][i] == 1:
                     cnt += 1
+                elif j == 0 and self.board[-1][i] == 1:
+                    cnt += 1
+
                 if i < self.cols - 1 and j < self.rows - 1 and self.board[j + 1][i + 1] == 1:
                     cnt += 1
+                elif i < self.cols - 1 and j == self.rows - 1 and self.board[0][i + 1] == 1:
+                    cnt += 1
+                elif i == self.cols - 1 and j < self.rows - 1 and self.board[j + 1][0] == 1:
+                    cnt += 1
+                elif i == self.cols - 1 and j == self.rows - 1 and self.board[0][0] == 1:
+                    cnt += 1
+
                 if i > 0 and j < self.rows - 1 and self.board[j + 1][i - 1] == 1:
                     cnt += 1
+                elif i > 0 and j == self.rows - 1 and self.board[0][i - 1] == 1:
+                    cnt += 1
+                elif i == 0 and j < self.rows - 1 and self.board[j + 1][-1] == 1:
+                    cnt += 1
+                elif i == 0 and j == self.rows - 1 and self.board[0][-1] == 1:
+                    cnt += 1
+
                 if i < self.cols - 1 and j > 0 and self.board[j - 1][i + 1] == 1:
                     cnt += 1
+                elif i < self.cols - 1 and j == 0 and self.board[-1][i + 1] == 1:
+                    cnt += 1
+                elif i == self.cols - 1 and j > 0 and self.board[j - 1][0] == 1:
+                    cnt += 1
+                elif i == self.cols - 1 and j == 0 and self.board[-1][0] == 1:
+                    cnt += 1
+
                 if i > 0 and j > 0 and self.board[j - 1][i - 1] == 1:
                     cnt += 1
+                elif i > 0 and j == 0 and self.board[-1][i - 1] == 1:
+                    cnt += 1
+                elif i == 0 and j > 0 and self.board[j - 1][-1] == 1:
+                    cnt += 1
+                elif i == 0 and j == 0 and self.board[-1][-1] == 1:
+                    cnt += 1
+
                 if i > 0 and self.board[j][i - 1] == 1:
                     cnt += 1
+                elif i == 0 and self.board[j][-1] == 1:
+                    cnt += 1
+
                 if i < self.cols - 1 and self.board[j][i + 1] == 1:
+                    cnt += 1
+                elif i == self.cols - 1 and self.board[j][0] == 1:
                     cnt += 1
 
                 if self.board[j][i] == 0 and cnt == 3:
