@@ -1,5 +1,4 @@
 import pprint
-
 import pygame
 
 
@@ -56,6 +55,8 @@ class Lines(Board):
     def __init__(self, a, b):
         super().__init__(a, b)
         self.red = None
+        self.arr = []
+        self.moving = False
 
     def on_click(self, cell):
         if self.red is None:
@@ -70,42 +71,67 @@ class Lines(Board):
 
         elif self.board[cell[1]][cell[0]] == 0:
             if self.has_path(cell[1], cell[0], self.red[1], self.red[0]):
-                self.board[cell[1]][cell[0]] = -1
-                self.board[self.red[1]][self.red[0]] = 0
-                self.red = None
+                self.move()
 
         elif self.board[cell[1]][cell[0]] == -2:
             self.board[cell[1]][cell[0]] = -1
             self.red = None
-            pprint.pprint(self.board)
 
     def has_path(self, x1, y1, x2, y2):
         board_local = [elem.copy() for elem in self.board]
-        for i in range(10):
-            for j in range(10):
+        for i in range(self.cols):
+            for j in range(self.rows):
                 if board_local[i][j] == -2:
                     board_local[i][j] = 0
+
+        print(x1, y1, x2, y2)
+
+        self.x2, self.y2 = x2, y2
+        self.arr = [(x1, y1)]
         board_local = self.voln(x1, y1, 1, board_local)
+        print(self.arr)
+        print(x2, y2, self.arr.index((x2, y2)))
+        self.arr = self.arr[:self.arr.index((x2, y2)) + 1]
+        self.arr.reverse()
+        print(self.arr)
+        self.moving = True
+        self.move()
         if board_local[x2][y2] > 0:
             return True
         else:
             return False
 
     def voln(self, x, y, cur, board):
+        if x == self.x2 and y == self.y2:
+            return board
         board[x][y] = cur
-        if y + 1 < 10:
+        if y + 1 < self.rows:
             if board[x][y + 1] == 0 or (board[x][y + 1] != -1 and board[x][y + 1] > cur):
+                self.arr.append((x, y + 1))
                 self.voln(x, y + 1, cur + 1, board)
-        if x + 1 < 10:
+        if x + 1 < self.cols:
             if board[x + 1][y] == 0 or (board[x + 1][y] != -1 and board[x + 1][y] > cur):
+                self.arr.append((x + 1, y))
                 self.voln(x + 1, y, cur + 1, board)
         if x - 1 >= 0:
             if board[x - 1][y] == 0 or (board[x - 1][y] != -1 and board[x - 1][y] > cur):
+                self.arr.append((x - 1, y))
                 self.voln(x - 1, y, cur + 1, board)
         if y - 1 >= 0:
             if board[x][y - 1] == 0 or (board[x][y - 1] != -1 and board[x][y - 1] > cur):
+                self.arr.append((x, y - 1))
                 self.voln(x, y - 1, cur + 1, board)
         return board
+
+    def move(self):
+        self.board[self.red[1]][self.red[0]] = 0
+        self.board[self.arr[0][0]][self.arr[0][1]] = -2
+        self.red = self.arr[0][::-1]
+        del self.arr[0]
+        if len(self.arr) == 0:
+            self.moving = False
+            self.board[self.red[1]][self.red[0]] = -1
+            self.red = None
 
 
 if __name__ == "__main__":
@@ -114,6 +140,8 @@ if __name__ == "__main__":
     size = width, height = 50 + number_of_cells * 50, 50 + number_of_cells * 50
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Линеечки")
+    clock = pygame.time.Clock()
+    fps = 10
 
     board = Lines(number_of_cells, number_of_cells)
     running = True
@@ -124,6 +152,9 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 board.get_click(event.pos)
         screen.fill((0, 0, 0))
+        if board.moving:
+            board.move()
         board.render()
+        clock.tick(fps)
         pygame.display.flip()
     pygame.quit()
